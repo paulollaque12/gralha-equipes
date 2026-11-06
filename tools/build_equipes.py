@@ -113,6 +113,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cubo", required=True); ap.add_argument("--so"); ap.add_argument("--saida", default=os.path.join(RAIZ, "docs"))
     ap.add_argument("--fonte", default=os.path.join(RAIZ, "fonte", "dashboard-gralha-funil.html"))
+    ap.add_argument("--so-dados", action="store_true", help="grava so docs/<slug>/data.enc.json (sem index.html): usado quando o login unico do gerencial abre o modo equipe")
     ap.add_argument("--mostrar-senhas", action="store_true", help="imprime slug e senha de cada equipe (so no terminal)")
     a = ap.parse_args()
     sen, mestre = os.environ.get("DASH_SENHA"), os.environ.get("EQUIPES_MESTRE")
@@ -122,7 +123,7 @@ def main():
     for nome in ([a.so] if a.so else EQUIPES):
         f = fatiar(c, nome); sl = slug(nome); d = os.path.join(a.saida, sl)
         cifrar(f, senha_equipe(nome, mestre), os.path.join(d, "data.enc.json"))
-        open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(html_equipe(live, shim, nome))
+        if not a.so_dados: open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(html_equipe(live, shim, nome))
         print(f"{sl}: linhas {len(f['rows'])} ate {f['ultimo']} | {os.path.getsize(os.path.join(d,'data.enc.json'))/1e6:.2f} MB" + (f" | senha {senha_equipe(nome, mestre)}" if a.mostrar_senhas else ""))
 
 if __name__ == "__main__":
